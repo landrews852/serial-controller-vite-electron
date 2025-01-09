@@ -1,10 +1,10 @@
 {
-  "name": "react-ts",
+  "name": "serial-controller-vite-electron",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "A Vite + Electron app for controlling serial devices",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "landrews.dev",
+  "homepage": "https://getjusto.com",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
