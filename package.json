@@ -1,6 +1,6 @@
 {
   "name": "serial-controller-vite-electron",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Vite + Electron app for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
@@ -17,7 +17,7 @@
     "postinstall": "electron-builder install-app-deps",
     "prebuild": "yarn version --patch",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
+    "build-win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux"
   },
