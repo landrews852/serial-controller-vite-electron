@@ -25,7 +25,7 @@ export default function HomeSerialController(): JSX.Element {
       <h2 className="text-2xl font-bold mb-4 text-black">No se han encontrado puertos seriales</h2>
     </div >
   }
-  console.log(window)
+
   return (
     <div className="p-6 max-w-lg mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-black">Serial Port Controller</h2>

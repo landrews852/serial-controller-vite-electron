@@ -11,8 +11,6 @@ export default function useSerialPort() {
   const [connected, setConnected] = useState<boolean>()
 
   useOnEvent('onConnect', () => {
-    console.log('connected')
-
     setConnected(true)
   })
 

@@ -9,13 +9,10 @@ electronAPI.onData((data: string) => {
 })
 
 electronAPI.onStatus((data) => {
-  console.log('onstatus', data)
   fireEvent('onStatus', data)
 })
 
 electronAPI.onConnect(() => {
-  console.log('connected')
-
   fireEvent('onConnect', null)
 })
 

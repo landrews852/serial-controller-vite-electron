@@ -28,7 +28,6 @@ function openSerialPort(_event, params: { path: string; options: SerialPortOptio
     if (currentPort?.isOpen) {
       currentPort.close()
     }
-    console.log('asd')
 
     currentPort = new SerialPort({
       ...options,
@@ -37,12 +36,13 @@ function openSerialPort(_event, params: { path: string; options: SerialPortOptio
       dataBits: 8,
       parity: 'none',
       stopBits: 1,
+      xon: true,
+      xoff: true,
+      rtscts: true,
       autoOpen: true
     })
 
     currentPort.on('open', () => {
-      console.log('open')
-
       mainWindow?.webContents.send('onStatus', 'Conectado')
       mainWindow?.webContents.send('onConnect', null)
     })
@@ -54,8 +54,6 @@ function openSerialPort(_event, params: { path: string; options: SerialPortOptio
     })
 
     currentPort.on('error', (err: Error) => {
-      console.log(err)
-
       mainWindow?.webContents.send('onStatus', `Error: ${err.message}`)
       mainWindow?.webContents.send('onError', null)
     })
@@ -64,10 +62,6 @@ function openSerialPort(_event, params: { path: string; options: SerialPortOptio
       mainWindow?.webContents.send('onStatus', 'Puerto cerrado')
       mainWindow?.webContents.send('onClose', null)
     })
-
-    setTimeout(() => {
-      sendKey('o')
-    }, 5000)
 
     return { success: true }
   } catch (error) {
