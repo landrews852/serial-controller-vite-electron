@@ -1,6 +1,5 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-
 // Custom APIs for renderer
 const api = {}
 
@@ -11,6 +10,17 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('serialAPI', {
+      listSerialPorts: () => ipcRenderer.invoke('listSerialPorts'),
+      openSerialPort: (params) => ipcRenderer.invoke('openSerialPort', params),
+      closeSerialPort: () => ipcRenderer.invoke('closeSerialPort'),
+
+      onData: (callback) => ipcRenderer.on('onData', (_event, data) => callback(data)),
+      onStatus: (callback) => ipcRenderer.on('onStatus', (_event, status) => callback(status)),
+      onConnect: (callback) => ipcRenderer.on('onConnect', () => callback()),
+      onClose: (callback) => ipcRenderer.on('onClose', () => callback()),
+      onError: (callback) => ipcRenderer.on('onError', () => callback())
+    })
   } catch (error) {
     console.error(error)
   }
@@ -20,3 +30,4 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.api = api
 }
+// preload.js
