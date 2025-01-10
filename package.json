@@ -1,6 +1,6 @@
 {
   "name": "serial-controller-vite-electron",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A Vite + Electron app for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
