@@ -5,6 +5,6 @@ declare global {
   interface Window {
     electron: ElectronAPI
     api: unknown
-    serialAPI: typeof serialAPI
+    serialAPI: SerialAPI
   }
 }

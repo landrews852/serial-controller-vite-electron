@@ -1,36 +1,63 @@
 import { useState, useEffect } from 'react'
 import useSerialPort from '../../hooks/useSerialPort'
-import logo from '../../assets/logo.svg'
 // import { HotkeysConfig } from '../HotKeysConfig'
 import { Button } from '../ui/button'
 
 export default function HomeSerialController(): JSX.Element {
-  const [port, setPort] = useState<string>('')
   const { ports, loadPorts, openPort, connected, status, disconnect } = useSerialPort()
+  const [port, setPort] = useState<string>('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   // const [configOpen, setConfigOpen] = useState(false)
 
   // const handleConfigOpen = (): void => {
   //   setConfigOpen(!configOpen)
   // }
 
+  const handleLoadPorts = async (): Promise<void> => {
+    try {
+      setError(null)
+      setLoading(true)
+      await new Promise<void>((resolve) =>
+        setTimeout(() => {
+          resolve()
+        }, 500)
+      )
+      await loadPorts()
+      await loadPorts()
+      if (ports.length === 0) {
+        setError('Error al cargar los puertos')
+      }
+    } catch (error) {
+      setError('Error al cargar los puertos')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     loadPorts()
   }, [])
 
+  useEffect(() => {
+    ports?.length && setPort(ports[0].path)
+  }, [ports])
+
   if (connected) {
     return (
-      <div className="p-6 max-w-lg mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-white">Conectado correctamente...</h2>
-
-        <button
-          type="button"
-          className="bg-blue-500 hover:bg-blue-700 text-slate-900 font-bold py-2 px-4 rounded"
-          onClick={async () => {
-            disconnect()
-          }}
-        >
-          Desconectar
-        </button>
+      <div className="p-4 w-screen flex-1">
+        <h2 className="text-center text-2xl font-bold my-10 pb-4 text-white">
+          Conectado correctamente...
+        </h2>
+        <div className="flex justify-end">
+          <Button
+            onClick={async () => {
+              disconnect()
+            }}
+          >
+            Desconectar
+          </Button>
+        </div>
       </div>
     )
   }
@@ -38,21 +65,28 @@ export default function HomeSerialController(): JSX.Element {
   if (!ports?.length) {
     return (
       <div className="p-6 max-w-lg mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-black">
-          No se han encontrado puertos seriales
-        </h2>
+        <h2 className="text-2xl font-bold mb-4">No se han encontrado puertos seriales</h2>
+        <p className="text-md pb-2 font-semibold">{error}</p>
+        <div className="flex justify-end">
+          <Button
+            onClick={async () => {
+              handleLoadPorts()
+            }}
+          >
+            {loading ? 'Cargando...' : 'Cargar puertos'}
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="p-4 min-w-screen flex-1">
-      <img width={100} className="flex-1 ml-auto" src={logo} alt="logo" />
+    <div className="p-4 w-screen flex-1">
       {/* {!configOpen ? ( */}
-      <div className="p-6 min-w-screen flex-1">
+      <>
         <div className="">
           <h2 className="text-2xl font-bold mb-1">Serial Port Controller</h2>
-          <p className="mb-4 italic opacity-80">Por defecto se asigna el puerto 1</p>
+          <p className="mb-4 italic opacity-80">Selecciona el puerto donde se conectó el teclado</p>
         </div>
         {/* <button onClick={() => window.serialAPI.openHotkeys()}>Configurar Hotkeys</button> */}
         <div className="mb-4 space-y-2">
@@ -61,7 +95,7 @@ export default function HomeSerialController(): JSX.Element {
             onChange={(e) => setPort(e.target.value)}
             className="w-full p-2 border rounded-lg text-black"
           >
-            <option value={ports?.[0].path}>Seleccione un puerto</option>
+            <option disabled>Seleccione un puerto</option>
             {ports.map((port) => (
               <option key={port.path} value={port.path}>
                 {port.path}
@@ -70,7 +104,7 @@ export default function HomeSerialController(): JSX.Element {
           </select>
           <div className="text-md pb-2 font-semibold">{status}</div>
 
-          <div className="flex flex-1 w-full justify-between">
+          <div className="flex flex-1 w-full justify-end">
             {port ? (
               <Button
                 onClick={() => {
@@ -102,6 +136,7 @@ export default function HomeSerialController(): JSX.Element {
             )}
 
             {/* <Button
+              color="secondary"
               onClick={() => {
                 setConfigOpen(!configOpen)
               }}
@@ -110,7 +145,7 @@ export default function HomeSerialController(): JSX.Element {
             </Button> */}
           </div>
         </div>
-      </div>
+      </>
       {/* ) : (
         <HotkeysConfig handleConfigOpen={handleConfigOpen} />
       )} */}

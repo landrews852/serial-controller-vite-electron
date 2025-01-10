@@ -3,16 +3,28 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {}
 const serialAPI = {
-  listSerialPorts: () => ipcRenderer.invoke('listSerialPorts'),
-  openSerialPort: (params) => ipcRenderer.invoke('openSerialPort', params),
-  closeSerialPort: () => ipcRenderer.invoke('closeSerialPort'),
+  listSerialPorts: (): Promise<string[]> => ipcRenderer.invoke('listSerialPorts'),
+  openSerialPort: (params): Promise<void> => ipcRenderer.invoke('openSerialPort', params),
+  closeSerialPort: (): Promise<void> => ipcRenderer.invoke('closeSerialPort'),
 
-  onData: (callback: (data: any) => void) =>
-    ipcRenderer.on('onData', (_event, data) => callback(data)),
-  onStatus: (callback) => ipcRenderer.on('onStatus', (_event, status) => callback(status)),
-  onConnect: (callback) => ipcRenderer.on('onConnect', () => callback()),
-  onClose: (callback) => ipcRenderer.on('onClose', () => callback()),
-  onError: (callback) => ipcRenderer.on('onError', () => callback())
+  // openHotkeys: (): void => ipcRenderer.send('open-hotkeys'),
+  // closeHotkeys: (): void => ipcRenderer.send('close-hotkeys'),
+
+  onData: (callback: (data: string) => void): void => {
+    ipcRenderer.on('onData', (_event, data) => callback(data))
+  },
+  onStatus: (callback): void => {
+    ipcRenderer.on('onStatus', (_event, status) => callback(status))
+  },
+  onConnect: (callback): void => {
+    ipcRenderer.on('onConnect', () => callback())
+  },
+  onClose: (callback): void => {
+    ipcRenderer.on('onClose', () => callback())
+  },
+  onError: (callback): void => {
+    ipcRenderer.on('onError', () => callback())
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -22,11 +34,11 @@ contextBridge.exposeInMainWorld('serialAPI', serialAPI)
 
 if (process.contextIsolated) {
   try {
-      contextBridge.exposeInMainWorld('electron', electronAPI)
-      contextBridge.exposeInMainWorld('api', api)
-    } catch (error) {
-      console.error(error)
-    }
+    contextBridge.exposeInMainWorld('electron', electronAPI)
+    contextBridge.exposeInMainWorld('api', api)
+  } catch (error) {
+    console.error(error)
+  }
 } else {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
@@ -36,3 +48,9 @@ if (process.contextIsolated) {
   // window.serialAPI = serialAPI
 }
 // preload.js
+
+// declare global {
+//   interface Window {
+//     serialAPI: typeof serialAPI
+//   }
+// }
