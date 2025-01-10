@@ -1,6 +1,6 @@
 {
   "name": "serial-controller-vite-electron",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "A Vite + Electron app for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
@@ -13,6 +13,7 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
+    "prebuild": "yarn version --patch",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
@@ -23,8 +24,10 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "clsx": "^2.1.1",
     "react-app-events": "^2.0.2",
     "serialport": "^13.0.0",
+    "tailwind-merge": "^2.6.0",
     "uiohook-napi": "^1.5.4"
   },
   "devDependencies": {

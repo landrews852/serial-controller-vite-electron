@@ -7,7 +7,7 @@ import { SerialPortOptions } from '../../renderer/src/types'
 
 export let currentPort: SerialPort
 
-function sendKey(key: string) {
+function sendKey(key: string): void {
   const keys = [
     { key: 'o', command: UiohookKey.ArrowLeft },
     { key: 'p', command: UiohookKey.ArrowRight },
@@ -22,7 +22,10 @@ function sendKey(key: string) {
   uIOhook.keyTap(keyData.command as number)
 }
 
-function openSerialPort(_event, params: { path: string; options: SerialPortOptions }) {
+function openSerialPort(
+  _event,
+  params: { path: string; options: SerialPortOptions }
+): { success: boolean; error?: string } {
   const { path, options } = params
   try {
     if (currentPort?.isOpen) {
@@ -72,7 +75,11 @@ function openSerialPort(_event, params: { path: string; options: SerialPortOptio
   }
 }
 
-async function listSerialPorts() {
+async function listSerialPorts(): Promise<{
+  success: boolean
+  ports?: { path: string; manufacturer?: string }[]
+  error?: string
+}> {
   try {
     const ports = await SerialPort.list()
     return { success: true, ports }
@@ -84,7 +91,7 @@ async function listSerialPorts() {
   }
 }
 
-function closeSerialPort() {
+function closeSerialPort(): { success: boolean; error?: string } {
   try {
     if (currentPort?.isOpen) {
       currentPort.close()
