@@ -1,6 +1,6 @@
 {
-  "name": "serial-controller-vite-electron",
-  "version": "1.0.24",
+  "name": "pdv-serial-controller",
+  "version": "1.0.25",
   "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",

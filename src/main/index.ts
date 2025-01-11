@@ -1,20 +1,28 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
 import { initIpc } from '../app/ipc'
+import pngIcon from '../../resources/icon.png?asset'
+import icoIcon from '../../resources/icon.ico?asset'
+import icnsIcon from '../../resources/icon.icns?asset'
 
 export let mainWindow: BrowserWindow | null = null
+
+const platform = [
+  { platform: 'darwin', icon: icnsIcon },
+  { platform: 'win32', icon: icoIcon },
+  { platform: 'linux', icon: pngIcon }
+]
 
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 350,
+    width: 550,
+    height: 500,
     show: false,
     autoHideMenuBar: true,
     resizable: false,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon: platform.find((p) => p.platform === process.platform)?.icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

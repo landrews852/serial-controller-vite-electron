@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react'
+import { Button } from '../ui/button'
 
 interface Hotkey {
   key: string // tecla que se recibe
   action: string // acción a ejecutar
 }
 
+interface ActionMap {
+  action: string
+  display: string
+}
+
+interface HotkeysConfigProps {
+  handleConfigOpen: () => void
+}
+
 const DEFAULT_HOTKEYS: Hotkey[] = [
   { key: 'o', action: 'ArrowLeft' },
   { key: 'p', action: 'ArrowRight' },
-  { key: 'a', action: 'ArrowUp5Times' },
-  { key: 'b', action: 'ArrowDown5Times' },
+  { key: 'a', action: 'ArrowUp' },
+  { key: 'b', action: 'ArrowDown' },
   { key: 'k', action: 'Space' }
 ]
 
-export const HotkeysConfig: React.FC<{ handleConfigOpen: () => void }> = ({ handleConfigOpen }) => {
+const ACTIONS: ActionMap[] = [
+  { action: 'ArrowLeft', display: '←' },
+  { action: 'ArrowRight', display: '→' },
+  { action: 'ArrowUp', display: '↑' },
+  { action: 'ArrowDown', display: '↓' },
+  { action: 'Space', display: 'Completar' }
+]
+
+export const HotkeysConfig: React.FC<HotkeysConfigProps> = ({ handleConfigOpen }) => {
   const [hotkeys, setHotkeys] = useState<Hotkey[]>(DEFAULT_HOTKEYS)
+  // const [error, setError] = useState<string | null>(null)
 
   // Cargar desde localStorage si existe
   useEffect(() => {
     const saved = localStorage.getItem('hotkeys')
     if (saved) {
       setHotkeys(JSON.parse(saved))
+    } else {
+      setHotkeys(DEFAULT_HOTKEYS)
     }
   }, [])
 
@@ -32,45 +53,54 @@ export const HotkeysConfig: React.FC<{ handleConfigOpen: () => void }> = ({ hand
 
   // Manejar cambios de teclas
   const handleKeyChange = (index: number, newKey: string): void => {
-    const updated = [...hotkeys]
-    updated[index].key = newKey
-    setHotkeys(updated)
-  }
+    const lastKey = newKey.slice(-1) // Tomar solo el último carácter ingresado
 
-  // Manejar cambios de acción
-  const handleActionChange = (index: number, newAction: string): void => {
+    // Validar si la tecla ya está en uso
+    if (hotkeys.some((hotkey, idx) => hotkey.key === lastKey && idx !== index)) {
+      alert(`La tecla "${lastKey === ' ' ? 'Space' : lastKey}" ya está asignada a otra acción.`)
+      return
+    }
+
+    // setError(null) // Limpiar error si no hay conflictos
     const updated = [...hotkeys]
-    updated[index].action = newAction
+    updated[index].key = lastKey
     setHotkeys(updated)
   }
 
   return (
     <div className="p-4">
-      <h2 className="text-xl mb-4">Configurar Hotkeys</h2>
-      {hotkeys.map((hotkey, idx) => (
-        <div key={hotkey.key} className="mb-2">
-          <input
-            className="border p-1 mr-2"
-            value={hotkey.key}
-            onChange={(e) => handleKeyChange(idx, e.target.value)}
-          />
-          <select
-            className="border p-1"
-            value={hotkey.action}
-            onChange={(e) => handleActionChange(idx, e.target.value)}
-          >
-            <option value="ArrowLeft">←</option>
-            <option value="ArrowRight">→</option>
-            <option value="ArrowUp5Times">↑ x5</option>
-            <option value="ArrowDown5Times">↓ x5</option>
-            <option value="Space">Espacio</option>
-          </select>
-        </div>
-      ))}
-      <button type="button" className="border p-2 mt-2" onClick={handleSave}>
-        Guardar
-      </button>
-      <button onClick={() => handleConfigOpen()}>Volver</button>
+      <h2 className="font-bold text-xl mb-4">Configurar Hotkeys</h2>
+      <div className="grid grid-cols-1 gap-1 place-items-center">
+        {hotkeys.map((hotkey, idx) => {
+          const foundAction = ACTIONS.find((a) => a.action === hotkey.action)
+
+          return (
+            <div key={hotkey.key} className="mb-2">
+              <input
+                className="border p-1 mr-2 font-bold text-black text-center"
+                value={hotkey.key === ' ' ? 'Space' : hotkey.key}
+                onChange={(e) => handleKeyChange(idx, e.target.value)}
+              />
+              <input
+                disabled
+                className="border p-1 font-bold text-center text-white bg-white/15"
+                value={foundAction?.display ?? 'N/A'}
+              />
+            </div>
+          )
+        })}
+      </div>
+      <div className="grid grid-cols-2 gap-2 mt-6">
+        <Button onClick={handleSave}>Guardar</Button>
+        <Button color="transparent" onClick={() => setHotkeys(DEFAULT_HOTKEYS)}>
+          Restaurar por defecto
+        </Button>
+      </div>
+      <div className="flex flex-col mt-4">
+        <Button color="secondary" onClick={() => handleConfigOpen()}>
+          Volver
+        </Button>
+      </div>
     </div>
   )
 }
