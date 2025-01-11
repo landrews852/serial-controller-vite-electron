@@ -1,6 +1,6 @@
 {
   "name": "pdv-serial-controller",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
