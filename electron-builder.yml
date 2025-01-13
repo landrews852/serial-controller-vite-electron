@@ -15,7 +15,6 @@ win:
   icon: build/icon.ico
   executableName: PDV Serial Controller
 nsis:
-  guid: E0DE6D84-B0D2-4BBD-9543-61B52767B3D3
   oneClick: false
   allowToChangeInstallationDirectory: true
   perMachine: false

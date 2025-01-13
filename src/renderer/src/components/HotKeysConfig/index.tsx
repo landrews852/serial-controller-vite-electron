@@ -70,14 +70,14 @@ export const HotkeysConfig: React.FC<HotkeysConfigProps> = ({ handleConfigOpen }
   return (
     <div className="p-4">
       <h2 className="font-bold text-xl mb-4">Configurar Hotkeys</h2>
-      <div className="grid grid-cols-1 gap-1 place-items-center">
+      <div className="flex flex-col">
         {hotkeys.map((hotkey, idx) => {
           const foundAction = ACTIONS.find((a) => a.action === hotkey.action)
 
           return (
-            <div key={hotkey.key} className="mb-2">
+            <div key={hotkey.key} className="grid grid-cols-2 gap-2 mb-2">
               <input
-                className="border p-1 mr-2 font-bold text-black text-center"
+                className="border p-1 font-bold text-center text-black"
                 value={hotkey.key === ' ' ? 'Space' : hotkey.key}
                 onChange={(e) => handleKeyChange(idx, e.target.value)}
               />
