@@ -18,37 +18,44 @@ PDV Serial Controller es una aplicación para controlar dispositivos seriales. E
 
 1. Clona el repositorio:
 
-    ```sh
-    git clone https://github.com/tu-usuario/pdv-serial-controller.git
-    cd pdv-serial-controller
-    ```
+   ```sh
+   git clone https://github.com/tu-usuario/pdv-serial-controller.git
+   cd pdv-serial-controller
+   ```
 
 2. Instala las dependencias:
-    ```sh
-    yarn install
-    ```
+   ```sh
+   yarn install
+   ```
 
 ## Uso
+
 ### Desarrollo
+
 Para iniciar la aplicación en modo desarrollo, ejecuta:
-  ```sh
-  yarn dev
-  ```
+
+```sh
+yarn dev
+```
 
 ### Construcción
+
 Para construir la aplicación para producción, ejecuta:
-  ```sh
-  yarn build
-  ```
+
+```sh
+yarn build
+```
 
 Los archivos de salida se encontrarán en el directorio dist.
 
 ### Linting y Formateo
+
 Para ejecutar ESLint y Prettier, usa:
-  ```sh
-  yarn lint
-  yarn format
-  ```
+
+```sh
+yarn lint
+yarn format
+```
 
 ## Configuración
 

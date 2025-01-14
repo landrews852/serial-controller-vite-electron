@@ -75,7 +75,7 @@ export const HotkeysConfig = ({
                   hotkey.key === ' '
                     ? 'Space'
                     : BUMPBAR_KEYS.find((bumpbarKey) => bumpbarKey.value === hotkey.key)
-                      ?.bumpbarName || hotkey.key
+                        ?.bumpbarName || hotkey.key
                 }
                 onFocus={() => setActiveIndex(idx)}
                 onChange={(e) => handleKeyChange(idx, e.target.value)}
