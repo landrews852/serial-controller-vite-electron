@@ -1,25 +1,51 @@
-import { ipcMain } from 'electron'
+import { app, ipcMain } from 'electron'
 import { SerialPort } from 'serialport'
 import { mainWindow } from '../../main'
-
-import { uIOhook, UiohookKey } from 'uiohook-napi'
+import fs from 'fs'
+import path from 'path'
+import { uIOhook } from 'uiohook-napi'
 import { SerialPortOptions } from '../../renderer/src/types'
 
 export let currentPort: SerialPort
+export let hotkeysConfig: HotkeysConfig = []
+
+function getHotkeys(): HotkeysConfig {
+  try {
+    const userData = app.getPath('userData')
+    const raw = fs.readFileSync(path.join(userData, 'hotkeys.json'), 'utf-8')
+    const hotkeys = JSON.parse(raw)
+    hotkeysConfig = hotkeys
+
+    return hotkeys
+  } catch {
+    return DEFAULT_HOTKEYS
+  }
+}
+
+async function saveHotkeys(
+  _event,
+  hotkeys: HotkeysConfig
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  const userData = app.getPath('userData')
+  const filePath = path.join(userData, 'hotkeys.json')
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(hotkeys, null, 2))
+
+    return { success: true, message: filePath }
+  } catch (error) {
+    return {
+      success: false,
+      message: filePath,
+      error: error instanceof Error ? error.message : String(error)
+    }
+  }
+}
 
 function sendKey(key: string): void {
-  const keys = [
-    { key: 'o', command: UiohookKey.ArrowLeft },
-    { key: 'p', command: UiohookKey.ArrowRight },
-    { key: 'a', command: UiohookKey.PageUp },
-    { key: 'b', command: UiohookKey.PageDown },
-    { key: 'k', command: UiohookKey.Space }
-  ]
+  const found = hotkeysConfig.find((val) => val.key === key)
+  if (!found) return
 
-  const keyData = keys.find((val) => key === val.key)
-  if (!keyData) return
-
-  uIOhook.keyTap(keyData.command as number)
+  uIOhook.keyTap(found.action)
 }
 
 function openSerialPort(
@@ -111,4 +137,24 @@ export function initIpc(): void {
   ipcMain.handle('listSerialPorts', listSerialPorts)
   ipcMain.handle('openSerialPort', openSerialPort)
   ipcMain.handle('closeSerialPort', closeSerialPort)
+  ipcMain.handle('saveHotkeys', saveHotkeys)
+  ipcMain.handle('getHotkeys', getHotkeys)
 }
+
+type HotkeysConfig = { key: string; action: number }[]
+
+enum Key {
+  ArrowLeft = 57419,
+  ArrowRight = 57421,
+  ArrowUp = 57416,
+  ArrowDown = 57424,
+  Space = 57
+}
+
+const DEFAULT_HOTKEYS: HotkeysConfig = [
+  { key: 'o', action: Key.ArrowLeft },
+  { key: 'p', action: Key.ArrowRight },
+  { key: 'a', action: Key.ArrowUp },
+  { key: 'b', action: Key.ArrowDown },
+  { key: 'k', action: Key.Space }
+]

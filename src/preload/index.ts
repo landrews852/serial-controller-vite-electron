@@ -1,17 +1,24 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+
 // Custom APIs for renderer
 const api = {}
 const serialAPI = {
+  // Serial port API
   listSerialPorts: (): Promise<string[]> => ipcRenderer.invoke('listSerialPorts'),
   openSerialPort: (params): Promise<void> => ipcRenderer.invoke('openSerialPort', params),
   closeSerialPort: (): Promise<void> => ipcRenderer.invoke('closeSerialPort'),
 
-  // openHotkeys: (): void => ipcRenderer.send('open-hotkeys'),
-  // closeHotkeys: (): void => ipcRenderer.send('close-hotkeys'),
-
-  onData: (callback: (data: string) => void): void => {
-    ipcRenderer.on('onData', (_event, data) => callback(data))
+  // Serial port events
+  onData: (
+    callback: (data: string) => void
+  ): ((_event: Electron.IpcRendererEvent, data: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: string): void => callback(data)
+    ipcRenderer.on('onData', listener)
+    return listener
+  },
+  offData: (listener: (event: Electron.IpcRendererEvent, data: string) => void): void => {
+    ipcRenderer.removeListener('onData', listener)
   },
   onStatus: (callback): void => {
     ipcRenderer.on('onStatus', (_event, status) => callback(status))
@@ -24,7 +31,11 @@ const serialAPI = {
   },
   onError: (callback): void => {
     ipcRenderer.on('onError', () => callback())
-  }
+  },
+
+  // Hotkeys API
+  saveHotkeys: (hotkeys): Promise<void> => ipcRenderer.invoke('saveHotkeys', hotkeys),
+  getHotkeys: (): Promise<void> => ipcRenderer.invoke('getHotkeys')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -47,10 +58,3 @@ if (process.contextIsolated) {
 
   // window.serialAPI = serialAPI
 }
-// preload.js
-
-// declare global {
-//   interface Window {
-//     serialAPI: typeof serialAPI
-//   }
-// }

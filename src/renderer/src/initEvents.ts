@@ -1,11 +1,14 @@
 import { fireEvent } from 'react-app-events'
 import { SerialAPI } from './types'
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const electronAPI = (window as unknown as { serialAPI: SerialAPI }).serialAPI
 
 electronAPI.onData((data: string) => {
   fireEvent('onData', data)
+})
+
+electronAPI.offData((data) => {
+  fireEvent('offData', data)
 })
 
 electronAPI.onStatus((data) => {

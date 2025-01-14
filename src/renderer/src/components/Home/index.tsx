@@ -10,7 +10,7 @@ export default function HomeSerialController(): JSX.Element {
   const [error, setError] = useState<string | null>(null)
   const [configOpen, setConfigOpen] = useState(false)
 
-  const handleConfigOpen = (): void => {
+  const handleConfigOpen: () => void = () => {
     setConfigOpen(!configOpen)
   }
 

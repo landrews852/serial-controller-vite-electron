@@ -1,38 +1,43 @@
-import type { ActionType } from '../types'
+import { useEffect, useState } from 'react'
+import { DEFAULT_HOTKEYS } from '../constants'
+import type { Hotkey } from '../types'
+import { Action } from '../constants'
 
 export default function useHotKeys() {
-  const keys: { key: string; action: ActionType }[] = [
-    { key: 'o', action: 'ArrowLeft' },
-    { key: 'p', action: 'ArrowRight' },
-    { key: 'a', action: 'ArrowUp5Times' },
-    { key: 'b', action: 'ArrowDown5Times' },
-    { key: 'k', action: 'Space' }
-  ]
+  const [hotkeys, setHotkeys] = useState<Hotkey[]>(DEFAULT_HOTKEYS)
 
-  // 2. Transforma las acciones a funciones reales
-  const getActionFunction = (action: ActionType): (() => void) => {
+  useEffect(() => {
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase()
+      if (key === 'f1') {
+        setHotkeys(DEFAULT_HOTKEYS)
+      }
+    })
+  })
+
+  const getActionFunction = (action: Action): (() => void) => {
     switch (action) {
-      case 'ArrowLeft':
+      case Action.ArrowLeft:
         return () => {
           window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
         }
-      case 'ArrowRight':
+      case Action.ArrowRight:
         return () => {
           window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
         }
-      case 'ArrowUp5Times':
+      case Action.ArrowUp:
         return () => {
-          for (let i = 0; i < 5; i++) {
+          for (let i = 0; i < 8; i++) {
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
           }
         }
-      case 'ArrowDown5Times':
+      case Action.ArrowDown:
         return () => {
-          for (let i = 0; i < 5; i++) {
+          for (let i = 0; i < 8; i++) {
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
           }
         }
-      case 'Space':
+      case Action.Space:
         return () => {
           window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
         }
@@ -41,7 +46,7 @@ export default function useHotKeys() {
     }
   }
 
-  const keysMap: { [key: string]: () => void } = keys.reduce(
+  const keysMap: { [key: string]: () => void } = hotkeys.reduce(
     (map, { key, action }) => {
       map[key] = getActionFunction(action)
       return map

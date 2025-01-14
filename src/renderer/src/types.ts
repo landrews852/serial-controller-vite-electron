@@ -1,4 +1,4 @@
-export type ActionType = 'ArrowLeft' | 'ArrowRight' | 'ArrowUp5Times' | 'ArrowDown5Times' | 'Space'
+export type ActionType = 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Space'
 
 export interface SerialPortOptions {
   baudRate: number
@@ -13,7 +13,7 @@ export interface SerialPortOptions {
 
 export interface Hotkey {
   key: string
-  action: ActionType
+  action: number
 }
 
 export interface OpenSerialPortParams {
@@ -30,8 +30,14 @@ export interface SerialAPI {
   openSerialPort: (data: OpenSerialPortParams) => Promise<{ success: boolean; error?: string }>
   closeSerialPort: () => Promise<{ success: boolean; error?: string }>
   onData: (callback: (data: string) => void) => void
+  // offData: (listener: (data: string) => void) => void
+  offData: (listener: (event: Electron.IpcRendererEvent, data: string) => void) => void
   onStatus: (callback: (status: string) => void) => void
   onConnect: (callback: () => void) => void
   onClose: (callback: () => void) => void
   onError: (callback: () => void) => void
+  saveHotkeys: (
+    hotkeys: Hotkey[]
+  ) => Promise<{ success: boolean; message?: string; error?: string }>
+  getHotkeys: () => Hotkey[]
 }

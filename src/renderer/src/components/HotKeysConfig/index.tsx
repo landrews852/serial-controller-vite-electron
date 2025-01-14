@@ -1,84 +1,83 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
+import { ACTIONS, BUMPBAR_KEYS, DEFAULT_HOTKEYS } from '../../constants'
+import { Hotkey } from '../../types'
+import useHotKeysConfig from '../../hooks/useHotkeysConfig'
 
-interface Hotkey {
-  key: string // tecla que se recibe
-  action: string // acción a ejecutar
-}
-
-interface ActionMap {
-  action: string
-  display: string
-}
-
-interface HotkeysConfigProps {
+export const HotkeysConfig = ({
+  handleConfigOpen
+}: {
   handleConfigOpen: () => void
-}
+}): JSX.Element => {
+  const { hotkeys, saveHotkeys, getHotkeys } = useHotKeysConfig()
+  const [newHotkeys, setNewHotkeys] = useState<Hotkey[]>(DEFAULT_HOTKEYS)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
-const DEFAULT_HOTKEYS: Hotkey[] = [
-  { key: 'o', action: 'ArrowLeft' },
-  { key: 'p', action: 'ArrowRight' },
-  { key: 'a', action: 'ArrowUp' },
-  { key: 'b', action: 'ArrowDown' },
-  { key: 'k', action: 'Space' }
-]
-
-const ACTIONS: ActionMap[] = [
-  { action: 'ArrowLeft', display: '←' },
-  { action: 'ArrowRight', display: '→' },
-  { action: 'ArrowUp', display: '↑' },
-  { action: 'ArrowDown', display: '↓' },
-  { action: 'Space', display: 'Completar' }
-]
-
-export const HotkeysConfig: React.FC<HotkeysConfigProps> = ({ handleConfigOpen }) => {
-  const [hotkeys, setHotkeys] = useState<Hotkey[]>(DEFAULT_HOTKEYS)
-  // const [error, setError] = useState<string | null>(null)
-
-  // Cargar desde localStorage si existe
-  useEffect(() => {
-    const saved = localStorage.getItem('hotkeys')
-    if (saved) {
-      setHotkeys(JSON.parse(saved))
-    } else {
-      setHotkeys(DEFAULT_HOTKEYS)
-    }
-  }, [])
-
-  // Guardar en localStorage
-  const handleSave = (): void => {
-    localStorage.setItem('hotkeys', JSON.stringify(hotkeys))
-    alert('Configuración guardada')
+  const fetchHotkeys = async (): Promise<void> => {
+    await getHotkeys()
   }
 
-  // Manejar cambios de teclas
-  const handleKeyChange = (index: number, newKey: string): void => {
-    const lastKey = newKey.slice(-1) // Tomar solo el último carácter ingresado
+  useEffect(() => {
+    fetchHotkeys()
+  }, [])
 
-    // Validar si la tecla ya está en uso
-    if (hotkeys.some((hotkey, idx) => hotkey.key === lastKey && idx !== index)) {
-      alert(`La tecla "${lastKey === ' ' ? 'Space' : lastKey}" ya está asignada a otra acción.`)
-      return
+  useEffect(() => {
+    setNewHotkeys(hotkeys)
+  }, [hotkeys])
+
+  useEffect(() => {
+    const listener = window.serialAPI.onData((key: string) => {
+      if (activeIndex !== null) {
+        setNewHotkeys((prev) => {
+          const updated = [...prev]
+          updated[activeIndex].key = key === ' ' ? ' ' : key
+          return updated
+        })
+      }
+    })
+
+    return (): void => {
+      window.serialAPI.offData(
+        listener as unknown as (event: Electron.IpcRendererEvent, data: string) => void
+      )
     }
+  }, [activeIndex])
 
-    // setError(null) // Limpiar error si no hay conflictos
-    const updated = [...hotkeys]
-    updated[index].key = lastKey
-    setHotkeys(updated)
+  const handleSave = async (): Promise<void> => {
+    await saveHotkeys(newHotkeys)
+    await fetchHotkeys()
+
+    handleConfigOpen()
+  }
+
+  // onChange SOLO aplica cuando se escribe con teclado normal
+  const handleKeyChange = (index: number, newKey: string): void => {
+    const lastKey = newKey.slice(-1)
+    setNewHotkeys((prev) => {
+      const updated = [...prev]
+      updated[index].key = lastKey === ' ' ? ' ' : lastKey
+      return updated
+    })
   }
 
   return (
     <div className="p-4">
       <h2 className="font-bold text-xl mb-4">Configurar Hotkeys</h2>
       <div className="flex flex-col">
-        {hotkeys.map((hotkey, idx) => {
+        {newHotkeys?.map((hotkey, idx) => {
           const foundAction = ACTIONS.find((a) => a.action === hotkey.action)
 
           return (
-            <div key={hotkey.key} className="grid grid-cols-2 gap-2 mb-2">
+            <div key={`hotkey-${idx}`} className="grid grid-cols-2 gap-2 mb-2">
               <input
                 className="border p-1 font-bold text-center text-black"
-                value={hotkey.key === ' ' ? 'Space' : hotkey.key}
+                value={
+                  hotkey.key === ' '
+                    ? 'Space'
+                    : BUMPBAR_KEYS.find((bumpbarKey) => bumpbarKey.value === hotkey.key)
+                      ?.bumpbarName || hotkey.key
+                }
+                onFocus={() => setActiveIndex(idx)}
                 onChange={(e) => handleKeyChange(idx, e.target.value)}
               />
               <input
@@ -92,7 +91,7 @@ export const HotkeysConfig: React.FC<HotkeysConfigProps> = ({ handleConfigOpen }
       </div>
       <div className="grid grid-cols-2 gap-2 mt-6">
         <Button onClick={handleSave}>Guardar</Button>
-        <Button color="transparent" onClick={() => setHotkeys(DEFAULT_HOTKEYS)}>
+        <Button color="transparent" onClick={async () => setNewHotkeys(DEFAULT_HOTKEYS)}>
           Restaurar por defecto
         </Button>
       </div>
@@ -103,4 +102,13 @@ export const HotkeysConfig: React.FC<HotkeysConfigProps> = ({ handleConfigOpen }
       </div>
     </div>
   )
+}
+
+declare global {
+  interface Window {
+    serialAPI: {
+      onData: (cb: (data: string) => void) => void
+      offData: (listener: (event: Electron.IpcRendererEvent, data: string) => void) => void
+    }
+  }
 }
