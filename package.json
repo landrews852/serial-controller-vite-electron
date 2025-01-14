@@ -1,9 +1,10 @@
 {
   "name": "pdv-serial-controller",
-  "version": "1.0.49",
+  "version": "1.0.50",
   "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
+  "license": "MIT",
   "homepage": "https://getjusto.com",
   "scripts": {
     "format": "prettier --write .",
