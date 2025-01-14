@@ -1,0 +1,18 @@
+[
+  { "value": "o", "bumpbarName": "<" },
+  { "value": "p", "bumpbarName": ">" },
+  { "value": "a", "bumpbarName": "1" },
+  { "value": "c", "bumpbarName": "2" },
+  { "value": "e", "bumpbarName": "3" },
+  { "value": "g", "bumpbarName": "4" },
+  { "value": "b", "bumpbarName": "5" },
+  { "value": "d", "bumpbarName": "6" },
+  { "value": "f", "bumpbarName": "7" },
+  { "value": "h", "bumpbarName": "8" },
+  { "value": "i", "bumpbarName": "REFRESH DISPLAY" },
+  { "value": "k", "bumpbarName": "QUE SELECT" },
+  { "value": "m", "bumpbarName": "RECALL LAST" },
+  { "value": "j", "bumpbarName": "SPLIT ON/OFF" },
+  { "value": "l", "bumpbarName": "QUE ON/OFF" },
+  { "value": "n", "bumpbarName": "SUM ON/OFF" }
+]

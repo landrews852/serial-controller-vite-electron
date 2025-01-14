@@ -1,9 +1,10 @@
 {
-  "name": "serial-controller-vite-electron",
-  "version": "1.0.0",
-  "description": "A Vite + Electron app for controlling serial devices",
+  "name": "pdv-serial-controller",
+  "version": "1.0.50",
+  "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
+  "license": "MIT",
   "homepage": "https://getjusto.com",
   "scripts": {
     "format": "prettier --write .",
@@ -13,6 +14,7 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
+    "prebuild": "yarn version --patch",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
@@ -23,7 +25,10 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "clsx": "^2.1.1",
+    "react-app-events": "^2.0.2",
     "serialport": "^13.0.0",
+    "tailwind-merge": "^2.6.0",
     "uiohook-napi": "^1.5.4"
   },
   "devDependencies": {
@@ -34,14 +39,17 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
     "electron": "^31.0.2",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",
+    "postcss": "^8.4.49",
     "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   }

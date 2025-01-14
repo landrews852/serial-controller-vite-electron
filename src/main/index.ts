@@ -1,16 +1,28 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import { initIpc } from '../app/ipc'
+import pngIcon from '../../resources/icon.png?asset'
+import icoIcon from '../../resources/icon.ico?asset'
+import icnsIcon from '../../resources/icon.icns?asset'
+
+export let mainWindow: BrowserWindow | null = null
+
+const platform = [
+  { platform: 'darwin', icon: icnsIcon },
+  { platform: 'win32', icon: icoIcon },
+  { platform: 'linux', icon: pngIcon }
+]
 
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+  mainWindow = new BrowserWindow({
+    width: 550,
+    height: 500,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    resizable: false,
+    icon: platform.find((p) => p.platform === process.platform)?.icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -18,7 +30,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -42,16 +54,20 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
+  // Enable auto-start on Windows
+  app.setLoginItemSettings({
+    openAtLogin: true, // Habilitar inicio automático
+    path: app.getPath('exe') // Ruta del ejecutable
+  })
+
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
+  initIpc()
   createWindow()
 
   app.on('activate', function () {
