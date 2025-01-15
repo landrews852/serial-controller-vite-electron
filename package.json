@@ -1,6 +1,6 @@
 {
   "name": "pdv-serial-controller",
-  "version": "1.0.54",
+  "version": "1.0.55",
   "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
@@ -23,7 +23,7 @@
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "23.6.0"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
