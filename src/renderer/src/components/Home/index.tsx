@@ -9,12 +9,17 @@ export default function HomeSerialController(): JSX.Element {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [configOpen, setConfigOpen] = useState(false)
+  const [shouldAutoConnect, setShouldAutoConnect] = useState(true)
 
-  const handleConfigOpen: () => void = () => {
+  const handleConfigOpen = (): void => {
     setConfigOpen(!configOpen)
   }
 
   const handleOpenPort = async (): Promise<void> => {
+    if (!port) {
+      setError('No se ha seleccionado ningún puerto')
+      return
+    }
     try {
       await openPort({
         path: port,
@@ -30,6 +35,7 @@ export default function HomeSerialController(): JSX.Element {
         }
       })
     } catch (error) {
+      console.error('Error al conectar el puerto:', error)
       setError('Error al conectar el puerto')
     }
   }
@@ -38,17 +44,12 @@ export default function HomeSerialController(): JSX.Element {
     try {
       setError(null)
       setLoading(true)
-      await new Promise<void>((resolve) =>
-        setTimeout(() => {
-          resolve()
-        }, 500)
-      )
-      await loadPorts()
       await loadPorts()
       if (ports.length === 0) {
-        setError('Error al cargar los puertos')
+        setError('No se encontraron puertos seriales')
       }
     } catch (error) {
+      console.error('Error al cargar los puertos:', error)
       setError('Error al cargar los puertos')
     } finally {
       setLoading(false)
@@ -56,14 +57,34 @@ export default function HomeSerialController(): JSX.Element {
   }
 
   useEffect(() => {
-    setError(null)
-    loadPorts()
+    handleLoadPorts()
   }, [])
 
+  // useEffect para seleccionar el primer puerto disponible cuando los puertos cambian
   useEffect(() => {
-    setError(null)
-    ports?.length && setPort(ports[0].path)
-  }, [ports])
+    const selectFirstPort = (): void => {
+      if (ports.length > 0 && shouldAutoConnect) {
+        const firstPort = ports[0].path
+        setPort(firstPort)
+      }
+    }
+    selectFirstPort()
+  }, [ports, shouldAutoConnect])
+
+  // useEffect para abrir el puerto seleccionado cuando 'port' cambia
+  useEffect(() => {
+    const openSelectedPort = async (): Promise<void> => {
+      if (port && !connected && shouldAutoConnect) {
+        await handleOpenPort()
+      }
+    }
+    openSelectedPort()
+  }, [port, connected, shouldAutoConnect])
+
+  const handleDisconnect = async (): Promise<void> => {
+    await disconnect()
+    setShouldAutoConnect(false) // Deshabilita la auto-conexión después de desconectar
+  }
 
   if (connected) {
     return (
@@ -74,22 +95,11 @@ export default function HomeSerialController(): JSX.Element {
               Conectado correctamente...
             </h2>
             <div className="flex flex-col space-y-4">
-              <Button
-                color="secondary"
-                onClick={() => {
-                  setConfigOpen(!configOpen)
-                }}
-              >
+              <Button color="secondary" onClick={handleConfigOpen}>
                 Configuración
               </Button>
 
-              <Button
-                onClick={async () => {
-                  disconnect()
-                }}
-              >
-                Desconectar
-              </Button>
+              <Button onClick={handleDisconnect}>Desconectar</Button>
             </div>
           </>
         ) : (
@@ -99,13 +109,13 @@ export default function HomeSerialController(): JSX.Element {
     )
   }
 
-  if (!ports?.length) {
+  if (!ports.length) {
     return (
       <div className="p-6 max-w-lg mx-auto">
         <h2 className="text-2xl font-bold mb-4">No se han encontrado puertos seriales</h2>
-        <p className="text-md pb-2 font-semibold">{error}</p>
+        {error && <p className="text-md pb-2 font-semibold text-red-500">{error}</p>}
         <div className="flex justify-end">
-          <Button onClick={async () => handleLoadPorts()}>
+          <Button onClick={handleLoadPorts} disabled={loading}>
             {loading ? 'Cargando...' : 'Cargar puertos'}
           </Button>
         </div>
@@ -115,7 +125,7 @@ export default function HomeSerialController(): JSX.Element {
 
   return (
     <div className="p-4 w-screen flex-1">
-      <div className="">
+      <div>
         <h2 className="text-2xl font-bold mb-1 text-white">Serial Port Controller</h2>
         <p className="mb-4 italic text-white opacity-80">
           Selecciona el puerto donde se conectó el teclado
@@ -127,7 +137,9 @@ export default function HomeSerialController(): JSX.Element {
           onChange={(e) => setPort(e.target.value)}
           className="w-full p-2 border rounded-lg text-black"
         >
-          <option disabled>Seleccione un puerto</option>
+          <option value="" disabled>
+            Seleccione un puerto
+          </option>
           {ports.map((port) => (
             <option key={port.path} value={port.path}>
               {port.path}
@@ -136,11 +148,15 @@ export default function HomeSerialController(): JSX.Element {
         </select>
         <div className="text-md pb-2 font-semibold">{status}</div>
 
-        <div className="flex flex-col w-full pt-4">
+        <div className="flex flex-col w-full pt-4 space-y-2">
           {port ? (
-            <Button onClick={() => handleOpenPort()}>Conectar</Button>
+            <Button onClick={handleOpenPort} disabled={connected}>
+              Conectar
+            </Button>
           ) : (
-            <Button onClick={() => loadPorts()}>Cargar puertos</Button>
+            <Button onClick={handleLoadPorts} disabled={loading}>
+              {loading ? 'Cargando...' : 'Cargar puertos'}
+            </Button>
           )}
         </div>
       </div>

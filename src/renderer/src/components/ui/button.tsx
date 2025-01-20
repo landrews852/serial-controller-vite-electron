@@ -9,6 +9,7 @@ export const Button = ({
   children: string
   onClick: () => void
   color?: string
+  [key: string]: unknown
 }): JSX.Element => {
   const colors = {
     primary: 'bg-blue-700 hover:bg-blue-600 focus:bg-blue-500 text-white',
