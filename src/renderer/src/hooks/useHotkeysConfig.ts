@@ -10,7 +10,6 @@ export default function useHotKeysConfig(): {
   const [hotkeys, setHotkeys] = useState<Hotkey[]>([])
 
   useEffect(() => {
-    // Cargar al montar el hook (si así lo deseas)
     getHotkeys()
   }, [])
 
