@@ -17,10 +17,8 @@ export default function useHotKeysConfig(): {
   const getHotkeys = async (): Promise<void> => {
     try {
       const res: Hotkey[] = await electronAPI.getHotkeys()
-      console.log('Hotkeys loaded NO:', res)
-      if (res?.length) {
-        console.log('Hotkeys loaded:', res)
 
+      if (res?.length) {
         setHotkeys(res)
       }
     } catch (err) {
@@ -31,7 +29,7 @@ export default function useHotKeysConfig(): {
   const saveHotkeys = async (newHotkeys: Hotkey[]): Promise<void> => {
     try {
       const res = await electronAPI.saveHotkeys(newHotkeys)
-      console.log('Hotkeys saved:', res.message)
+
       if (res?.success) {
         setHotkeys(newHotkeys)
       }
