@@ -15,32 +15,26 @@ export default function useHotKeys() {
     })
   })
 
-  const getActionFunction = (action: Action): (() => void) => {
+  const getActionFunction = (action: Action | 'GoToJusto'): (() => void) => {
     switch (action) {
       case Action.ArrowLeft:
-        return () => {
-          window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
-        }
+        return () => dispatchKeyEvents('ArrowLeft')
+
       case Action.ArrowRight:
-        return () => {
-          window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
-        }
+        return () => dispatchKeyEvents('ArrowRight')
+
       case Action.ArrowUp:
-        return () => {
-          for (let i = 0; i < 8; i++) {
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
-          }
-        }
+        return () => dispatchKeyEvents('ArrowUp', 5)
+
       case Action.ArrowDown:
-        return () => {
-          for (let i = 0; i < 8; i++) {
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
-          }
-        }
+        return () => dispatchKeyEvents('ArrowDown', 5)
+
       case Action.Space:
-        return () => {
-          window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
-        }
+        return () => dispatchKeyEvents(' ')
+
+      case Action.GoToJusto:
+        return () => dispatchKeyEvents('GoToJusto')
+
       default:
         return () => {}
     }
@@ -59,4 +53,14 @@ export default function useHotKeys() {
     if (!func) return
     func()
   }
+}
+
+function dispatchKeyEvents(key: string, count?: number): void {
+  const event = new KeyboardEvent('keydown', { key: key })
+
+  if (!count) window.dispatchEvent(event)
+
+  new Array(count).fill(0).forEach(() => {
+    window.dispatchEvent(event)
+  })
 }

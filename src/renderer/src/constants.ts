@@ -5,7 +5,8 @@ export enum Action {
   ArrowRight = 57421,
   ArrowUp = 57416,
   ArrowDown = 57424,
-  Space = 57
+  Space = 57,
+  GoToJusto = 'GoToJusto'
 }
 
 export const DEFAULT_HOTKEYS: Hotkey[] = [
@@ -13,15 +14,17 @@ export const DEFAULT_HOTKEYS: Hotkey[] = [
   { key: 'p', action: Action.ArrowRight },
   { key: 'a', action: Action.ArrowUp },
   { key: 'b', action: Action.ArrowDown },
-  { key: 'k', action: Action.Space }
+  { key: 'k', action: Action.Space },
+  { key: 'h', action: Action.GoToJusto }
 ]
 
-export const ACTIONS: { action: number; display: string }[] = [
-  { action: 57419, display: '←' }, // ArrowLeft
-  { action: 57421, display: '→' }, // ArrowRight
-  { action: 57416, display: '↑' }, // ArrowUp
-  { action: 57424, display: '↓' }, // ArrowDown
-  { action: 57, display: 'Completar' } // Space
+export const ACTIONS: { action: number | 'GoToJusto'; display: string }[] = [
+  { action: Action.ArrowLeft, display: '←' },
+  { action: Action.ArrowRight, display: '→' },
+  { action: Action.ArrowUp, display: '↑' },
+  { action: Action.ArrowDown, display: '↓' },
+  { action: Action.Space, display: 'Completar' },
+  { action: Action.GoToJusto, display: 'Ir a Justo/Chrome' }
 ]
 
 export const BUMPBAR_KEYS = [

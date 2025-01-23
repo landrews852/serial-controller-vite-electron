@@ -10,6 +10,8 @@ const serialAPI = {
   closeSerialPort: (): Promise<void> => ipcRenderer.invoke('closeSerialPort'),
 
   // Serial port events
+  focusWindow: (primaryTitle: string, fallbackTitle: string): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('focusWindow', primaryTitle, fallbackTitle),
   onData: (
     callback: (data: string) => void
   ): ((_event: Electron.IpcRendererEvent, data: string) => void) => {
@@ -33,7 +35,7 @@ const serialAPI = {
     ipcRenderer.on('onError', () => callback())
   },
 
-  // Hotkeys API
+  // Hotkeys config API
   saveHotkeys: (hotkeys): Promise<void> => ipcRenderer.invoke('saveHotkeys', hotkeys),
   getHotkeys: (): Promise<void> => ipcRenderer.invoke('getHotkeys')
 }
