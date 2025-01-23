@@ -1,6 +1,6 @@
 {
   "name": "pdv-serial-controller",
-  "version": "1.0.64",
+  "version": "1.0.65",
   "description": "App for controlling serial devices",
   "main": "./out/main/index.js",
   "author": "landrews.dev",
@@ -33,6 +33,9 @@
     "serialport": "^13.0.0",
     "tailwind-merge": "^2.6.0",
     "uiohook-napi": "^1.5.4"
+  },
+  "optionalDependencies": {
+    "win-control": "^0.3.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
