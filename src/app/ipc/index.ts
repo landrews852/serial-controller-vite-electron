@@ -6,55 +6,56 @@ import path from 'path'
 import { uIOhook } from 'uiohook-napi'
 import { SerialPortOptions } from '../../renderer/src/types'
 import { HotkeysConfig, Key } from '../../types'
+import { Action } from '../../renderer/src/constants'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let winControl: { getWindows?: () => any[] } = {}
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// let winControl: { getWindows?: () => any[] } = {}
 
-if (process.platform === 'win32') {
-  // Carga win-control solamente en Windows
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  winControl = require('win-control')
-}
+// if (process.platform === 'win32') {
+//   // Carga win-control solamente en Windows
+//   // eslint-disable-next-line @typescript-eslint/no-var-requires
+//   winControl = require('win-control')
+// }
 
 export let currentPort: SerialPort
 export let hotkeysConfig: HotkeysConfig = []
 
-async function focusWindow(
-  _event,
-  primaryTitle: string,
-  fallbackTitle: string
-): Promise<{ success: boolean; message?: string; error?: string }> {
-  // Si no está en Windows, retornamos un error
-  if (!winControl) {
-    return { success: false, message: 'No se está ejecutando en Windows' }
-  }
+// async function focusWindow(
+//   _event,
+//   primaryTitle: string,
+//   fallbackTitle: string
+// ): Promise<{ success: boolean; message?: string; error?: string }> {
+//   // Si no está en Windows, retornamos un error
+//   if (!winControl) {
+//     return { success: false, message: 'No se está ejecutando en Windows' }
+//   }
 
-  try {
-    const { getWindows } = winControl
-    if (!getWindows) {
-      return { success: false, message: 'getWindows is undefined' }
-    }
-    const allWindows = getWindows()
-    let targetWindow = allWindows.find((w) =>
-      w.getTitle()?.toLowerCase().includes(primaryTitle.toLowerCase())
-    )
-    if (!targetWindow) {
-      targetWindow = allWindows.find((w) =>
-        w.getTitle()?.toLowerCase().includes(fallbackTitle.toLowerCase())
-      )
-    }
-    if (targetWindow) {
-      targetWindow.bringToTop()
-      return { success: true }
-    }
-    return {
-      success: false,
-      message: `No se encontró ventana con título: ${primaryTitle} ni ${fallbackTitle}`
-    }
-  } catch (error) {
-    return { success: false, error: String(error) }
-  }
-}
+//   try {
+//     const { getWindows } = winControl
+//     if (!getWindows) {
+//       return { success: false, message: 'getWindows is undefined' }
+//     }
+//     const allWindows = getWindows()
+//     let targetWindow = allWindows.find((w) =>
+//       w.getTitle()?.toLowerCase().includes(primaryTitle.toLowerCase())
+//     )
+//     if (!targetWindow) {
+//       targetWindow = allWindows.find((w) =>
+//         w.getTitle()?.toLowerCase().includes(fallbackTitle.toLowerCase())
+//       )
+//     }
+//     if (targetWindow) {
+//       targetWindow.bringToTop()
+//       return { success: true }
+//     }
+//     return {
+//       success: false,
+//       message: `No se encontró ventana con título: ${primaryTitle} ni ${fallbackTitle}`
+//     }
+//   } catch (error) {
+//     return { success: false, error: String(error) }
+//   }
+// }
 
 function getHotkeys(): HotkeysConfig {
   try {
@@ -92,12 +93,12 @@ function sendKey(key: string): void {
   const found = hotkeysConfig.find((val) => val.key === key)
   if (!found) return
 
-  if (found.action === Key.GoToJusto) {
-    focusWindow(null, 'JustoHub', 'Google Chrome')
-    return
-  }
+  // if (found.action === Key.GoToJusto) {
+  //   focusWindow(null, 'JustoHub', 'Google Chrome')
+  //   return
+  // }
 
-  uIOhook.keyTap(found.action)
+  uIOhook.keyTap(found.action as Action)
 }
 
 function openSerialPort(
@@ -186,7 +187,7 @@ function closeSerialPort(): { success: boolean; error?: string } {
 }
 
 export function initIpc(): void {
-  ipcMain.handle('focusWindow', focusWindow)
+  // ipcMain.handle('focusWindow', focusWindow)
   ipcMain.handle('listSerialPorts', listSerialPorts)
   ipcMain.handle('openSerialPort', openSerialPort)
   ipcMain.handle('closeSerialPort', closeSerialPort)
@@ -195,10 +196,10 @@ export function initIpc(): void {
 }
 
 const DEFAULT_HOTKEYS: HotkeysConfig = [
-  { key: 'o', action: Key.ArrowLeft },
-  { key: 'p', action: Key.ArrowRight },
-  { key: 'a', action: Key.ArrowUp },
-  { key: 'b', action: Key.ArrowDown },
-  { key: 'k', action: Key.Space },
-  { key: 'h', action: Key.GoToJusto }
+  // { key: 'h', action: Key.GoToJusto },
+  { key: 'a', action: Key.ArrowLeft },
+  { key: 'b', action: Key.ArrowRight },
+  { key: 'c', action: Key.ArrowUp },
+  { key: 'd', action: Key.ArrowDown },
+  { key: 'o', action: Key.Space }
 ]

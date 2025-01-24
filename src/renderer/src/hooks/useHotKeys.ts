@@ -32,8 +32,8 @@ export default function useHotKeys() {
       case Action.Space:
         return () => dispatchKeyEvents(' ')
 
-      case Action.GoToJusto:
-        return () => dispatchKeyEvents('GoToJusto')
+      // case Action.GoToJusto:
+      //   return () => dispatchKeyEvents('GoToJusto')
 
       default:
         return () => {}

@@ -1,10 +1,4 @@
-export type ActionType =
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'ArrowDown'
-  | 'Space'
-  | 'GoToJusto'
+export type ActionType = 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Space' // | 'GoToJusto'
 
 export interface SerialPortOptions {
   baudRate: number
@@ -28,7 +22,7 @@ export interface OpenSerialPortParams {
 }
 
 export interface SerialAPI {
-  focusWindow: () => void
+  // focusWindow: () => void
   listSerialPorts: () => Promise<{
     success: boolean
     ports?: { path: string }[]

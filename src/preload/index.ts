@@ -10,8 +10,8 @@ const serialAPI = {
   closeSerialPort: (): Promise<void> => ipcRenderer.invoke('closeSerialPort'),
 
   // Serial port events
-  focusWindow: (primaryTitle: string, fallbackTitle: string): Promise<{ success: boolean }> =>
-    ipcRenderer.invoke('focusWindow', primaryTitle, fallbackTitle),
+  // focusWindow: (primaryTitle: string, fallbackTitle: string): Promise<{ success: boolean }> =>
+  //   ipcRenderer.invoke('focusWindow', primaryTitle, fallbackTitle),
   onData: (
     callback: (data: string) => void
   ): ((_event: Electron.IpcRendererEvent, data: string) => void) => {
