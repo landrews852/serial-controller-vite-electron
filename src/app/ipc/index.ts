@@ -7,7 +7,6 @@ import { uIOhook } from 'uiohook-napi'
 import { SerialPortOptions } from '../../renderer/src/types'
 import { HotkeysConfig, Key } from '../../types'
 import { Action } from '../../renderer/src/constants'
-import robot from 'robotjs'
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // let winControl: { getWindows?: () => any[] } = {}
@@ -60,17 +59,10 @@ export let hotkeysConfig: HotkeysConfig = []
 
 function simulateAltTab(): { success: boolean; message?: string } {
   try {
-    if (process.platform === 'darwin') {
-      robot.keyToggle('command', 'down')
-      robot.keyTap('tab')
-      robot.keyToggle('command', 'up')
-      return { success: true, message: 'Simulando Alt+Tab en macOS.' }
-    } else {
-      robot.keyToggle('alt', 'down')
-      robot.keyTap('tab')
-      robot.keyToggle('alt', 'up')
-      return { success: true, message: 'Simulando Alt+Tab en Windows/Linux.' }
-    }
+    uIOhook.keyToggle(56, 'down')
+    uIOhook.keyTap(15)
+    uIOhook.keyToggle(56, 'up')
+    return { success: true, message: 'Simulando Alt+Tab en macOS.' }
   } catch (err) {
     return { success: false, message: `Error al simular alt+tab: ${String(err)}` }
   }
