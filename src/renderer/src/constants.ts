@@ -2,6 +2,7 @@ import type { Hotkey } from './types'
 
 export enum Action {
   // GoToJusto = 'GoToJusto',
+  AltTab = 18,
   ArrowLeft = 57419,
   ArrowRight = 57421,
   ArrowUp = 57416,
@@ -11,6 +12,7 @@ export enum Action {
 
 export const DEFAULT_HOTKEYS: Hotkey[] = [
   // { key: 'h', action: Action.GoToJusto },
+  { key: 'h', action: Action.AltTab },
   { key: 'a', action: Action.ArrowLeft },
   { key: 'b', action: Action.ArrowRight },
   { key: 'c', action: Action.ArrowUp },
@@ -21,6 +23,7 @@ export const DEFAULT_HOTKEYS: Hotkey[] = [
 // export const ACTIONS: { action: number | 'GoToJusto'; display: string }[] = [
 export const ACTIONS: { action: number; display: string }[] = [
   // { action: Action.GoToJusto, display: 'Ir a Justo/Chrome' },
+  { action: Action.AltTab, display: 'Alt + Tab' },
   { action: Action.ArrowLeft, display: '←' },
   { action: Action.ArrowRight, display: '→' },
   { action: Action.ArrowUp, display: '↑' },

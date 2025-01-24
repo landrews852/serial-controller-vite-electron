@@ -3,6 +3,7 @@ export type HotkeysConfig = { key: string; action: number }[]
 
 export enum Key {
   // GoToJusto = 'GoToJusto',
+  AltTab = 99999,
   ArrowLeft = 57419,
   ArrowRight = 57421,
   ArrowUp = 57416,

@@ -7,6 +7,7 @@ import { uIOhook } from 'uiohook-napi'
 import { SerialPortOptions } from '../../renderer/src/types'
 import { HotkeysConfig, Key } from '../../types'
 import { Action } from '../../renderer/src/constants'
+import robot from 'robotjs'
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // let winControl: { getWindows?: () => any[] } = {}
@@ -57,6 +58,24 @@ export let hotkeysConfig: HotkeysConfig = []
 //   }
 // }
 
+function simulateAltTab(): { success: boolean; message?: string } {
+  try {
+    if (process.platform === 'darwin') {
+      robot.keyToggle('command', 'down')
+      robot.keyTap('tab')
+      robot.keyToggle('command', 'up')
+      return { success: true, message: 'Simulando Alt+Tab en macOS.' }
+    } else {
+      robot.keyToggle('alt', 'down')
+      robot.keyTap('tab')
+      robot.keyToggle('alt', 'up')
+      return { success: true, message: 'Simulando Alt+Tab en Windows/Linux.' }
+    }
+  } catch (err) {
+    return { success: false, message: `Error al simular alt+tab: ${String(err)}` }
+  }
+}
+
 function getHotkeys(): HotkeysConfig {
   try {
     const userData = app.getPath('userData')
@@ -93,10 +112,10 @@ function sendKey(key: string): void {
   const found = hotkeysConfig.find((val) => val.key === key)
   if (!found) return
 
-  // if (found.action === Key.GoToJusto) {
-  //   focusWindow(null, 'JustoHub', 'Google Chrome')
-  //   return
-  // }
+  if (found.action === Key.AltTab) {
+    simulateAltTab()
+    return
+  }
 
   uIOhook.keyTap(found.action as Action)
 }

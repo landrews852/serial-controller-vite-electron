@@ -13,7 +13,8 @@ export interface SerialPortOptions {
 
 export interface Hotkey {
   key: string
-  action: number | 'GoToJusto'
+  // action: number | 'GoToJusto'
+  action: number
 }
 
 export interface OpenSerialPortParams {

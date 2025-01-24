@@ -15,7 +15,8 @@ export default function useHotKeys() {
     })
   })
 
-  const getActionFunction = (action: Action | 'GoToJusto'): (() => void) => {
+  // const getActionFunction = (action: Action | 'GoToJusto'): (() => void) => {
+  const getActionFunction = (action: Action): (() => void) => {
     switch (action) {
       case Action.ArrowLeft:
         return () => dispatchKeyEvents('ArrowLeft')
@@ -31,6 +32,9 @@ export default function useHotKeys() {
 
       case Action.Space:
         return () => dispatchKeyEvents(' ')
+
+      case Action.AltTab:
+        return () => dispatchKeyEvents('AltTab')
 
       // case Action.GoToJusto:
       //   return () => dispatchKeyEvents('GoToJusto')
