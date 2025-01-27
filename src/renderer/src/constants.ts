@@ -1,34 +1,30 @@
 import type { Hotkey } from './types'
 
 export enum Action {
-  // GoToJusto = 'GoToJusto',
-  AltTab = 9999,
   ArrowLeft = 57419,
   ArrowRight = 57421,
   ArrowUp = 57416,
   ArrowDown = 57424,
-  Space = 57
+  Space = 57,
+  History = 35
 }
 
 export const DEFAULT_HOTKEYS: Hotkey[] = [
-  // { key: 'h', action: Action.GoToJusto },
-  { key: 'h', action: Action.AltTab },
   { key: 'a', action: Action.ArrowLeft },
   { key: 'b', action: Action.ArrowRight },
   { key: 'c', action: Action.ArrowUp },
   { key: 'd', action: Action.ArrowDown },
-  { key: 'o', action: Action.Space }
+  { key: 'o', action: Action.Space },
+  { key: 'p', action: Action.History }
 ]
 
-// export const ACTIONS: { action: number | 'GoToJusto'; display: string }[] = [
 export const ACTIONS: { action: number; display: string }[] = [
-  // { action: Action.GoToJusto, display: 'Ir a Justo/Chrome' },
-  { action: Action.AltTab, display: 'Alt + Tab' },
   { action: Action.ArrowLeft, display: '←' },
   { action: Action.ArrowRight, display: '→' },
   { action: Action.ArrowUp, display: '↑' },
   { action: Action.ArrowDown, display: '↓' },
-  { action: Action.Space, display: 'Completar' }
+  { action: Action.Space, display: 'Completar' },
+  { action: Action.History, display: 'Historial' }
 ]
 
 export const BUMPBAR_KEYS = [

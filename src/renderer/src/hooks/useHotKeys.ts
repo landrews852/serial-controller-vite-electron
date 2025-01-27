@@ -33,12 +33,6 @@ export default function useHotKeys() {
       case Action.Space:
         return () => dispatchKeyEvents(' ')
 
-      case Action.AltTab:
-        return () => dispatchKeyEvents('AltTab')
-
-      // case Action.GoToJusto:
-      //   return () => dispatchKeyEvents('GoToJusto')
-
       default:
         return () => {}
     }

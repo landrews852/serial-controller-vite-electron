@@ -4,81 +4,28 @@ import { mainWindow } from '../../main'
 import fs from 'fs'
 import path from 'path'
 import { uIOhook } from 'uiohook-napi'
-import { SerialPortOptions } from '../../renderer/src/types'
-import { HotkeysConfig, Key } from '../../types'
-import { Action } from '../../renderer/src/constants'
-
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// let winControl: { getWindows?: () => any[] } = {}
-
-// if (process.platform === 'win32') {
-//   // Carga win-control solamente en Windows
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   winControl = require('win-control')
-// }
+import { Hotkey, SerialPortOptions } from '../../renderer/src/types'
+import { Action, DEFAULT_HOTKEYS } from '../../renderer/src/constants'
 
 export let currentPort: SerialPort
-export let hotkeysConfig: HotkeysConfig = []
+export let hotkeysArr: Hotkey[] = []
 
-// async function focusWindow(
-//   _event,
-//   primaryTitle: string,
-//   fallbackTitle: string
-// ): Promise<{ success: boolean; message?: string; error?: string }> {
-//   // Si no está en Windows, retornamos un error
-//   if (!winControl) {
-//     return { success: false, message: 'No se está ejecutando en Windows' }
-//   }
-
-//   try {
-//     const { getWindows } = winControl
-//     if (!getWindows) {
-//       return { success: false, message: 'getWindows is undefined' }
-//     }
-//     const allWindows = getWindows()
-//     let targetWindow = allWindows.find((w) =>
-//       w.getTitle()?.toLowerCase().includes(primaryTitle.toLowerCase())
-//     )
-//     if (!targetWindow) {
-//       targetWindow = allWindows.find((w) =>
-//         w.getTitle()?.toLowerCase().includes(fallbackTitle.toLowerCase())
-//       )
-//     }
-//     if (targetWindow) {
-//       targetWindow.bringToTop()
-//       return { success: true }
-//     }
-//     return {
-//       success: false,
-//       message: `No se encontró ventana con título: ${primaryTitle} ni ${fallbackTitle}`
-//     }
-//   } catch (error) {
-//     return { success: false, error: String(error) }
-//   }
-// }
-
-function simulateAltTab(): { success: boolean; message?: string } {
-  try {
-    uIOhook.keyToggle(56, 'down')
-    uIOhook.keyTap(15)
-    uIOhook.keyToggle(56, 'up')
-    return { success: true, message: 'Simulando Alt+Tab en macOS.' }
-  } catch (err) {
-    return { success: false, message: `Error al simular alt+tab: ${String(err)}` }
-  }
-}
-
-function getHotkeys(): HotkeysConfig {
+function getHotkeys(): Hotkey[] {
   try {
     const userData = app.getPath('userData')
     const raw = fs.readFileSync(path.join(userData, 'hotkeys.json'), 'utf-8')
     const hotkeys = JSON.parse(raw)
+
     if (!Array.isArray(hotkeys)) {
       return DEFAULT_HOTKEYS
     }
-    hotkeysConfig = hotkeys
 
-    return hotkeys
+    hotkeysArr = DEFAULT_HOTKEYS.map((hotkey) => {
+      const item = hotkeys.find((val) => val.key !== hotkey.key && val.action === hotkey.action)
+      return !item ? hotkey : item
+    })
+
+    return hotkeysArr
   } catch {
     return DEFAULT_HOTKEYS
   }
@@ -86,7 +33,7 @@ function getHotkeys(): HotkeysConfig {
 
 async function saveHotkeys(
   _event,
-  hotkeys: HotkeysConfig
+  hotkeys: Hotkey[]
 ): Promise<{ success: boolean; message?: string; error?: string }> {
   const userData = app.getPath('userData')
   const filePath = path.join(userData, 'hotkeys.json')
@@ -104,13 +51,8 @@ async function saveHotkeys(
 }
 
 function sendKey(key: string): void {
-  const found = hotkeysConfig.find((val) => val.key === key)
+  const found = hotkeysArr.find((val) => val.key === key)
   if (!found) return
-
-  if (found.action === Key.AltTab) {
-    simulateAltTab()
-    return
-  }
 
   uIOhook.keyTap(found.action as Action)
 }
@@ -208,12 +150,3 @@ export function initIpc(): void {
   ipcMain.handle('saveHotkeys', saveHotkeys)
   ipcMain.handle('getHotkeys', getHotkeys)
 }
-
-const DEFAULT_HOTKEYS: HotkeysConfig = [
-  // { key: 'h', action: Key.GoToJusto },
-  { key: 'a', action: Key.ArrowLeft },
-  { key: 'b', action: Key.ArrowRight },
-  { key: 'c', action: Key.ArrowUp },
-  { key: 'd', action: Key.ArrowDown },
-  { key: 'o', action: Key.Space }
-]

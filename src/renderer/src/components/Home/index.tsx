@@ -63,8 +63,8 @@ export default function HomeSerialController(): JSX.Element {
   }
 
   useEffect(() => {
-    handleLoadPorts()
     fetchHotkeys()
+    handleLoadPorts()
   }, [])
 
   // useEffect para seleccionar el primer puerto disponible cuando los puertos cambian
