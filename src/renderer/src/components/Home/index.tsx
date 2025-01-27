@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import useSerialPort from '../../hooks/useSerialPort'
 import { HotkeysConfig } from '../HotKeysConfig'
 import { Button } from '../ui/button'
+import useHotKeysConfig from '../../hooks/useHotkeysConfig'
 
 export default function HomeSerialController(): JSX.Element {
   const { ports, loadPorts, openPort, connected, status, disconnect } = useSerialPort()
@@ -10,6 +11,7 @@ export default function HomeSerialController(): JSX.Element {
   const [error, setError] = useState<string | null>(null)
   const [configOpen, setConfigOpen] = useState(false)
   const [shouldAutoConnect, setShouldAutoConnect] = useState(true)
+  const { getHotkeys } = useHotKeysConfig()
 
   const handleConfigOpen = (): void => {
     setConfigOpen(!configOpen)
@@ -56,8 +58,13 @@ export default function HomeSerialController(): JSX.Element {
     }
   }
 
+  const fetchHotkeys = async (): Promise<void> => {
+    await getHotkeys()
+  }
+
   useEffect(() => {
     handleLoadPorts()
+    fetchHotkeys()
   }, [])
 
   // useEffect para seleccionar el primer puerto disponible cuando los puertos cambian

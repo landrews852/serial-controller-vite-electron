@@ -2,7 +2,7 @@ import type { Hotkey } from './types'
 
 export enum Action {
   // GoToJusto = 'GoToJusto',
-  AltTab = 18,
+  AltTab = 9999,
   ArrowLeft = 57419,
   ArrowRight = 57421,
   ArrowUp = 57416,

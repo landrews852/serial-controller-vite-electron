@@ -15,8 +15,8 @@ win:
   icon: build/icon.ico
   executableName: PDV Serial Controller
 nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
+  oneClick: true
+  # allowToChangeInstallationDirectory: true
   perMachine: false
   allowElevation: false # Deshabilita solicitudes de permisos elevados
   artifactName: ${productName}-${version}-setup.${ext}

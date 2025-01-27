@@ -73,6 +73,9 @@ function getHotkeys(): HotkeysConfig {
     const userData = app.getPath('userData')
     const raw = fs.readFileSync(path.join(userData, 'hotkeys.json'), 'utf-8')
     const hotkeys = JSON.parse(raw)
+    if (!Array.isArray(hotkeys)) {
+      return DEFAULT_HOTKEYS
+    }
     hotkeysConfig = hotkeys
 
     return hotkeys
