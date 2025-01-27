@@ -20,8 +20,6 @@ export default function useHotKeysConfig(): {
       if (res?.length) {
         setHotkeys(res)
       }
-
-      console.log('Hotkeys:', res)
     } catch (err) {
       console.error('Error al cargar hotkeys:', err)
     }
